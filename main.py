@@ -29,12 +29,13 @@ def chunky_monkey_csv_loader(csv_file_path,
                                  iterator=True,
                                  chunksize=chunk_size)
     for chunk in chunk_iterator:
+
         if bulk_insert:
             try:
                 # delete=False and manual close and delete for Windows NT:
                 # https://docs.python.org/3/library/tempfile.html
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as temp_csv:
-                    chunk.to_csv(temp_csv.name, header=False, columns=columns_to_include)
+                    chunk.to_csv(temp_csv.name, header=False, columns=included_columns)
                     temp_csv.close()
                     sql_db.bulk_insert(csv_file_path=temp_csv.name,
                                        sql_schema_name=sql_schema_name,
@@ -54,11 +55,11 @@ def chunky_monkey_csv_loader(csv_file_path,
 
 if __name__=='__main__':
 
-    big_csv_file = r'C:\Users\Erik\Documents\University of Idaho\Projects\data\TREE.csv'
+    big_csv_file = r'C:\Users\Erik\Documents\University\CNR-PAG_Raju\data\data\TREE.csv'
 
     conn_dict = {
         'DRIVER': 'ODBC Driver 13 for SQL Server',
-        'SERVER': 'ORION\TARS',
+        'SERVER': 'AURVANDIL\SQLEXPRESS',
         'DATABASE': 'Data_Raju',
         'Trusted_Connection': 'yes'
     }
@@ -66,7 +67,23 @@ if __name__=='__main__':
     sql_db = MSSqlDb(connection_dict=conn_dict)
 
     # TREE.csv:
-    columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT', 'DRYBIO_AG', 'DRYBIO_BG']
+    columns = [
+         'PLT_CN',
+         'INVYR',
+         'CONDID',
+         'STATECD',
+         'COUNTYCD',
+         'CYCLE',
+         'PLOT',
+         'TPA_UNADJ',
+         'DRYBIO_BOLE',
+         'DRYBIO_STUMP',
+         'DRYBIO_TOP',
+         'DRYBIO_SAPLING',
+         'DRYBIO_WDLD_SPP',
+         'DRYBIO_AG',
+         'DRYBIO_BG'
+    ]
     # COND.csv: columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
     # PLOTSNAP.csv: columns_to_include = ['CN', 'INVYR', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
 
@@ -74,5 +91,5 @@ if __name__=='__main__':
                              sqlalchemy_engine=sql_db.engine,
                              sql_schema_name='dbo',
                              sql_table_name='TREE',
-                             included_columns=columns_to_include,
+                             included_columns=columns,
                              chunk_size=500000)
