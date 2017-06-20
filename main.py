@@ -25,12 +25,11 @@ def chunky_monkey_csv_loader(csv_file_path,
                                  chunksize=chunk_size)
     for chunk in chunk_iterator:
         if bulk_insert:
-
             try:
                 # delete=False and manual close and delete for Windows NT:
                 # https://docs.python.org/3/library/tempfile.html
                 with tempfile.NamedTemporaryFile(delete=False, suffix='.csv') as temp_csv:
-                    chunk.to_csv(temp_csv.name, header=False)
+                    chunk.to_csv(temp_csv.name, header=False, columns=columns_to_include)
                     temp_csv.close()
                     sql_db.bulk_insert(csv_file_path=temp_csv.name,
                                        sql_schema_name='dbo',
@@ -50,19 +49,20 @@ def chunky_monkey_csv_loader(csv_file_path,
 
 if __name__=='__main__':
 
-    big_csv_file = r'C:\Users\Erik\Documents\University of Idaho\Projects\data\data\TREE.csv'
+    big_csv_file = r'C:\Users\Erik\Documents\University\CNR-PAG_Raju\TREE.csv'
 
     conn_dict = {
         'DRIVER': 'ODBC Driver 13 for SQL Server',
-        'SERVER': 'ORION\TARS',
+        'SERVER': 'AURVANDIL\SQLEXPRESS',
         'DATABASE': 'Data_Raju',
         'Trusted_Connection': 'yes'
     }
 
     sql_db = MSSqlDb(connection_dict=conn_dict)
 
-    columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'CYCLE', 'COUNTYCD', 'PLOT']
+    columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'CYCLE', 'COUNTYCD', 'PLOT', 'DRYBIO_AG', 'DRYBIO_BG']
 
     chunky_monkey_csv_loader(csv_file_path=big_csv_file,
                              sqlalchemy_engine=sql_db.engine,
-                             included_columns=columns_to_include)
+                             included_columns=columns_to_include,
+                             chunk_size=100000)
