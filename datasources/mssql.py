@@ -38,6 +38,8 @@ class MSSqlDb:
     def bulk_insert(self, csv_file_path, sql_schema_name, sql_table_name,
                     field_terminator, row_terminator):
         """
+        https://docs.microsoft.com/en-us/sql/t-sql/statements/bulk-insert-transact-sql
+
         EXAMPLE:
 
         MSSqlDb.bulk_insert(self,
@@ -60,7 +62,7 @@ class MSSqlDb:
 
         # This is the only implementation that works at the moment in
         # issuing and committing the BULK INSERT functionality successfully
-        # in SQL Server (2016), otherwise
+        # in SQL Server (2016)
         raw_con = self.engine.raw_connection()
         cursor = raw_con.cursor()
         cursor.execute(sql)
