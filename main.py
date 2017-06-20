@@ -54,7 +54,7 @@ def chunky_monkey_csv_loader(csv_file_path,
 
 if __name__=='__main__':
 
-    big_csv_file = r'C:\Users\Erik\Documents\University of Idaho\Projects\data\COND.csv'
+    big_csv_file = r'C:\Users\Erik\Documents\University of Idaho\Projects\data\TREE.csv'
 
     conn_dict = {
         'DRIVER': 'ODBC Driver 13 for SQL Server',
@@ -65,13 +65,14 @@ if __name__=='__main__':
 
     sql_db = MSSqlDb(connection_dict=conn_dict)
 
-    # TREE.csv: columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT', 'DRYBIO_AG', 'DRYBIO_BG']
+    # TREE.csv:
+    columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT', 'DRYBIO_AG', 'DRYBIO_BG']
     # COND.csv: columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
-    # PLOTSNAP.csv: columns_to_include = ['CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
-    
+    # PLOTSNAP.csv: columns_to_include = ['CN', 'INVYR', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
+
     chunky_monkey_csv_loader(csv_file_path=big_csv_file,
                              sqlalchemy_engine=sql_db.engine,
                              sql_schema_name='dbo',
-                             sql_table_name='Cond',
+                             sql_table_name='TREE',
                              included_columns=columns_to_include,
                              chunk_size=500000)
