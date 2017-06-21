@@ -2,6 +2,7 @@ import csv
 import os
 import tempfile
 import pandas as pd
+import numpy as np
 from datasources.mssql import MSSqlDb
 from pandas.errors import ParserError
 
@@ -12,6 +13,7 @@ def chunky_monkey_csv_loader(csv_file_path,
                              sql_table_name,
                              bulk_insert=True,
                              included_columns=None,
+                             column_dtypes=None,
                              chunk_size=10000):
     """
     Reads the specified csv file by chunks, each chunk is a Pandas dataframe
@@ -26,6 +28,7 @@ def chunky_monkey_csv_loader(csv_file_path,
 
     chunk_iterator = pd.read_csv(filepath_or_buffer=csv_file_path,
                                  usecols=included_columns,
+                                 dtype=column_dtypes,
                                  iterator=True,
                                  chunksize=chunk_size)
     for chunk in chunk_iterator:
@@ -42,9 +45,6 @@ def chunky_monkey_csv_loader(csv_file_path,
                                        sql_table_name=sql_table_name,
                                        field_terminator=',',
                                        row_terminator='\\n')
-            except Exception as e:
-                print(e)
-                print(chunk)
             except ParserError as p:
                 print('Check that the file is not malformed')
             finally:
@@ -56,7 +56,7 @@ def chunky_monkey_csv_loader(csv_file_path,
 
 if __name__=='__main__':
 
-    big_csv_file = r'C:\Users\Erik\Documents\University\CNR-PAG_Raju\data\data\COND.csv'
+    big_csv_file = r'C:\Users\Erik\Documents\University\CNR-PAG_Raju\data\data\PLOTSNAP.csv'
 
     conn_dict = {
         'DRIVER': 'ODBC Driver 13 for SQL Server',
@@ -86,59 +86,70 @@ if __name__=='__main__':
     #      'DRYBIO_BG'
     # ]
     # COND.csv:
+    # columns = [
+    # 	'PLT_CN',
+    # 	'INVYR',
+    # 	'CONDID',
+    # 	'STATECD',
+    # 	'COUNTYCD',
+    # 	'CYCLE',
+    # 	'PLOT',
+    # 	'COND_STATUS_CD',
+    # 	'FORTYPCD',
+    # 	'STDAGE',
+    # 	'SLOPE',
+    # 	'ASPECT',
+    # 	'OWNCD',
+    # 	'OWNGRPCD',
+    # 	'FIRE_SRS',
+    # 	'DSTRBCD1',
+    # 	'DSTRBYR1',
+    # 	'DSTRBCD2',
+    # 	'DSTRBYR2',
+    # 	'DSTRBCD3',
+    # 	'DSTRBYR3',
+    # ]
+
+    # https://pandas.pydata.org/pandas-docs/stable/gotchas.html
+    # dtype_override_dict = {
+    #     'FORTYPCD': np.object,
+    #     'STDAGE': np.object,
+    #     'SLOPE': np.object,
+    #     'ASPECT': np.object,
+    #     'OWNCD': np.object,
+    # 	'OWNGRPCD': np.object,
+    # 	'FIRE_SRS': np.object,
+    # 	'DSTRBCD1': np.object,
+    # 	'DSTRBYR1': np.object,
+    # 	'DSTRBCD2': np.object,
+    # 	'DSTRBYR2': np.object,
+    # 	'DSTRBCD3': np.object,
+    # 	'DSTRBYR3': np.object,
+    # }
+
+    # PLOTSNAP.csv:
     columns = [
-    	'PLT_CN',
-    	'INVYR',
-    	'CONDID',
-    	'STATECD',
-    	'COUNTYCD',
-    	'CYCLE',
-    	'PLOT',
-    	'COND_STATUS_CD',
-    	'FORTYPCD',
-    	'STDAGE',
-    	'SLOPE',
-    	'ASPECT',
-    	'OWNCD',
-    	'OWNGRPCD',
-    	'FIRE_SRS',
-    	'DSTRBCD1',
-    	'DSTRBYR1',
-    	'DSTRBCD2',
-    	'DSTRBYR2',
-    	'DSTRBCD3',
-    	'DSTRBYR3',
+         'CN',
+         'INVYR',
+         'STATECD',
+         'COUNTYCD',
+         'CYCLE',
+         'PLOT',
+         'LAT',
+         'LON',
+         'ELEV',
+         'WATERCD',
     ]
 
-    dtype_dict = {
-    	'PLT_CN': ,
-    	'INVYR',
-    	'CONDID',
-    	'STATECD',
-    	'COUNTYCD',
-    	'CYCLE',
-    	'PLOT',
-    	'COND_STATUS_CD',
-    	'FORTYPCD',
-    	'STDAGE',
-    	'SLOPE',
-    	'ASPECT',
-    	'OWNCD',
-    	'OWNGRPCD',
-    	'FIRE_SRS',
-    	'DSTRBCD1',
-    	'DSTRBYR1',
-    	'DSTRBCD2',
-    	'DSTRBYR2',
-    	'DSTRBCD3',
-    	'DSTRBYR3',
+    dtype_override_dict = {
+        'ELEV': np.object,
+        'WATERCD': np.object,
     }
-
-    # PLOTSNAP.csv: columns_to_include = ['CN', 'INVYR', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
 
     chunky_monkey_csv_loader(csv_file_path=big_csv_file,
                              sqlalchemy_engine=sql_db.engine,
                              sql_schema_name='dbo',
-                             sql_table_name='COND',
+                             sql_table_name='PLOTSNAP',
                              included_columns=columns,
-                             chunk_size=100)
+                             column_dtypes=dtype_override_dict,
+                             chunk_size=100000)
