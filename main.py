@@ -42,20 +42,21 @@ def chunky_monkey_csv_loader(csv_file_path,
                                        sql_table_name=sql_table_name,
                                        field_terminator=',',
                                        row_terminator='\\n')
-
             except Exception as e:
                 print(e)
+                print(chunk)
             except ParserError as p:
                 print('Check that the file is not malformed')
             finally:
                 os.unlink(temp_csv.name)
+                print('A monkey has chunked again')
         else:
             chunk.to_sql(sql_table_name, sql_db.engine, sql_schema_name, if_exists='append')
 
 
 if __name__=='__main__':
 
-    big_csv_file = r'C:\Users\Erik\Documents\University\CNR-PAG_Raju\data\data\TREE.csv'
+    big_csv_file = r'C:\Users\Erik\Documents\University\CNR-PAG_Raju\data\data\COND.csv'
 
     conn_dict = {
         'DRIVER': 'ODBC Driver 13 for SQL Server',
@@ -67,29 +68,77 @@ if __name__=='__main__':
     sql_db = MSSqlDb(connection_dict=conn_dict)
 
     # TREE.csv:
+    # columns = [
+    #      'PLT_CN',
+    #      'INVYR',
+    #      'CONDID',
+    #      'STATECD',
+    #      'COUNTYCD',
+    #      'CYCLE',
+    #      'PLOT',
+    #      'TPA_UNADJ',
+    #      'DRYBIO_BOLE',
+    #      'DRYBIO_STUMP',
+    #      'DRYBIO_TOP',
+    #      'DRYBIO_SAPLING',
+    #      'DRYBIO_WDLD_SPP',
+    #      'DRYBIO_AG',
+    #      'DRYBIO_BG'
+    # ]
+    # COND.csv:
     columns = [
-         'PLT_CN',
-         'INVYR',
-         'CONDID',
-         'STATECD',
-         'COUNTYCD',
-         'CYCLE',
-         'PLOT',
-         'TPA_UNADJ',
-         'DRYBIO_BOLE',
-         'DRYBIO_STUMP',
-         'DRYBIO_TOP',
-         'DRYBIO_SAPLING',
-         'DRYBIO_WDLD_SPP',
-         'DRYBIO_AG',
-         'DRYBIO_BG'
+    	'PLT_CN',
+    	'INVYR',
+    	'CONDID',
+    	'STATECD',
+    	'COUNTYCD',
+    	'CYCLE',
+    	'PLOT',
+    	'COND_STATUS_CD',
+    	'FORTYPCD',
+    	'STDAGE',
+    	'SLOPE',
+    	'ASPECT',
+    	'OWNCD',
+    	'OWNGRPCD',
+    	'FIRE_SRS',
+    	'DSTRBCD1',
+    	'DSTRBYR1',
+    	'DSTRBCD2',
+    	'DSTRBYR2',
+    	'DSTRBCD3',
+    	'DSTRBYR3',
     ]
-    # COND.csv: columns_to_include = ['PLT_CN', 'INVYR', 'CONDID', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
+
+    dtype_dict = {
+    	'PLT_CN': ,
+    	'INVYR',
+    	'CONDID',
+    	'STATECD',
+    	'COUNTYCD',
+    	'CYCLE',
+    	'PLOT',
+    	'COND_STATUS_CD',
+    	'FORTYPCD',
+    	'STDAGE',
+    	'SLOPE',
+    	'ASPECT',
+    	'OWNCD',
+    	'OWNGRPCD',
+    	'FIRE_SRS',
+    	'DSTRBCD1',
+    	'DSTRBYR1',
+    	'DSTRBCD2',
+    	'DSTRBYR2',
+    	'DSTRBCD3',
+    	'DSTRBYR3',
+    }
+
     # PLOTSNAP.csv: columns_to_include = ['CN', 'INVYR', 'STATECD', 'COUNTYCD', 'CYCLE', 'PLOT']
 
     chunky_monkey_csv_loader(csv_file_path=big_csv_file,
                              sqlalchemy_engine=sql_db.engine,
                              sql_schema_name='dbo',
-                             sql_table_name='TREE',
+                             sql_table_name='COND',
                              included_columns=columns,
-                             chunk_size=500000)
+                             chunk_size=100)
