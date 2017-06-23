@@ -49,7 +49,7 @@ def chunky_monkey_csv_loader(csv_file_path,
                 print('Check that the file is not malformed')
             finally:
                 os.unlink(temp_csv.name)
-                print('A monkey has chunked again')
+                print('Chunk loaded.')
         else:
             chunk.to_sql(sql_table_name, sql_db.engine, sql_schema_name, if_exists='append')
 
