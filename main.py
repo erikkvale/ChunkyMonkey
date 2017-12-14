@@ -25,14 +25,12 @@ def chunky_monkey_csv_loader(csv_file_path,
     depending on the DBAPI used in the SQLAlchemy connection, this could be very
     slow, so bulk_insert=True is the default.
     """
-
     chunk_iterator = pd.read_csv(filepath_or_buffer=csv_file_path,
                                  usecols=included_columns,
                                  dtype=column_dtypes,
                                  iterator=True,
                                  chunksize=chunk_size)
     for chunk in chunk_iterator:
-
         if bulk_insert:
             try:
                 # delete=False and manual close and delete for Windows NT:
