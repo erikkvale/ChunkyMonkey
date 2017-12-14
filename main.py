@@ -47,6 +47,7 @@ def chunky_monkey_csv_loader(csv_file_path,
                                        row_terminator='\\n')
             except ParserError as p:
                 print('Check that the file is not malformed')
+                raise
             finally:
                 os.unlink(temp_csv.name)
                 print('Chunk loaded.')
@@ -66,66 +67,6 @@ if __name__=='__main__':
     }
 
     sql_db = MSSqlDb(connection_dict=conn_dict)
-
-    # TREE.csv:
-    # columns = [
-    #      'PLT_CN',
-    #      'INVYR',
-    #      'CONDID',
-    #      'STATECD',
-    #      'COUNTYCD',
-    #      'CYCLE',
-    #      'PLOT',
-    #      'TPA_UNADJ',
-    #      'DRYBIO_BOLE',
-    #      'DRYBIO_STUMP',
-    #      'DRYBIO_TOP',
-    #      'DRYBIO_SAPLING',
-    #      'DRYBIO_WDLD_SPP',
-    #      'DRYBIO_AG',
-    #      'DRYBIO_BG'
-    # ]
-    # COND.csv:
-    # columns = [
-    # 	'PLT_CN',
-    # 	'INVYR',
-    # 	'CONDID',
-    # 	'STATECD',
-    # 	'COUNTYCD',
-    # 	'CYCLE',
-    # 	'PLOT',
-    # 	'COND_STATUS_CD',
-    # 	'FORTYPCD',
-    # 	'STDAGE',
-    # 	'SLOPE',
-    # 	'ASPECT',
-    # 	'OWNCD',
-    # 	'OWNGRPCD',
-    # 	'FIRE_SRS',
-    # 	'DSTRBCD1',
-    # 	'DSTRBYR1',
-    # 	'DSTRBCD2',
-    # 	'DSTRBYR2',
-    # 	'DSTRBCD3',
-    # 	'DSTRBYR3',
-    # ]
-
-    # https://pandas.pydata.org/pandas-docs/stable/gotchas.html
-    # dtype_override_dict = {
-    #     'FORTYPCD': np.object,
-    #     'STDAGE': np.object,
-    #     'SLOPE': np.object,
-    #     'ASPECT': np.object,
-    #     'OWNCD': np.object,
-    # 	'OWNGRPCD': np.object,
-    # 	'FIRE_SRS': np.object,
-    # 	'DSTRBCD1': np.object,
-    # 	'DSTRBYR1': np.object,
-    # 	'DSTRBCD2': np.object,
-    # 	'DSTRBYR2': np.object,
-    # 	'DSTRBCD3': np.object,
-    # 	'DSTRBYR3': np.object,
-    # }
 
     # PLOTSNAP.csv:
     columns = [
